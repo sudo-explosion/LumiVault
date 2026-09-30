@@ -11,15 +11,22 @@ const originalFetch = typeof window !== 'undefined' ? window.fetch : null;
 const fetch = async (...args: any[]) => {
   console.log('Mock fetch intercepted:', args);
   
-  // If it's a component search query
   if (typeof args[0] === 'string' && args[0].includes('/api/components?q=')) {
       const q = args[0].split('?q=')[1].toLowerCase();
-      // Dummy data matching "capac" or "resis" or anything
+      const saved = localStorage.getItem('mock_components');
+      let arr = [];
+      if (saved) {
+        arr = JSON.parse(saved);
+      } else {
+        arr = [
+          { id: 'comp_1', name: 'Arduino Nano', category: 'Microcontrollers', quantity: 5 },
+          { id: 'comp_2', name: '10k Resistors', category: 'Passives', quantity: 100 },
+          { id: '1', name: 'Ceramic Capacitor 104', category: 'Passives', quantity: 50 },
+          { id: '2', name: 'Electrolytic Capacitor 10uF', category: 'Passives', quantity: 20 }
+        ];
+      }
       return { 
-         json: async () => [
-            { id: '1', name: 'Ceramic Capacitor 104', quantity: 50, category: 'Passives' },
-            { id: '2', name: 'Electrolytic Capacitor 10uF', quantity: 20, category: 'Passives' }
-         ].filter(c => c.name.toLowerCase().includes(q) || c.category.toLowerCase().includes(q))
+         json: async () => arr.filter(c => c.name.toLowerCase().includes(q) || c.category.toLowerCase().includes(q))
       } as any;
   }
   

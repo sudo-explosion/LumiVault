@@ -26,12 +26,24 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('INVENTORY');
   
   
-  const [components, setComponents] = useState<any[]>([
-    { id: 'comp_1', name: 'Arduino Nano', category: 'Microcontrollers', quantity: 5, notes: 'Clone', locations: [{ cupboard_name: 'Main Wardrobe', shelf_name: 'Top Shelf' }] },
-    { id: 'comp_2', name: '10k Resistors', category: 'Passives', quantity: 100, notes: 'Through hole', locations: [{ cupboard_name: 'Electronics', tray_id: 'tr_1', position_percent: 20 }] },
-    { id: '1', name: 'Ceramic Capacitor 104', category: 'Passives', quantity: 50, notes: 'SMD', locations: [{ cupboard_name: 'Electronics', tray_id: 'tr_2', position_percent: 60 }] },
-    { id: '2', name: 'Electrolytic Capacitor 10uF', category: 'Passives', quantity: 20, notes: 'THT', locations: [{ cupboard_name: 'Electronics', tray_id: 'tr_2', position_percent: 60 }] }
-  ]);
+  
+  const [components, setComponents] = useState<any[]>([]);
+  useEffect(() => {
+    const saved = localStorage.getItem('mock_components');
+    if (saved) {
+      setComponents(JSON.parse(saved));
+    } else {
+      const initial = [
+        { id: 'comp_1', name: 'Arduino Nano', category: 'Microcontrollers', quantity: 5, notes: 'Clone', locations: [{ cupboard_name: 'Main Wardrobe', shelf_name: 'Top Shelf' }] },
+        { id: 'comp_2', name: '10k Resistors', category: 'Passives', quantity: 100, notes: 'Through hole', locations: [{ cupboard_name: 'Electronics', tray_id: 'tr_1', position_percent: 20 }] },
+        { id: '1', name: 'Ceramic Capacitor 104', category: 'Passives', quantity: 50, notes: 'SMD', locations: [{ cupboard_name: 'Electronics', tray_id: 'tr_2', position_percent: 60 }] },
+        { id: '2', name: 'Electrolytic Capacitor 10uF', category: 'Passives', quantity: 20, notes: 'THT', locations: [{ cupboard_name: 'Electronics', tray_id: 'tr_2', position_percent: 60 }] }
+      ];
+      setComponents(initial);
+      localStorage.setItem('mock_components', JSON.stringify(initial));
+    }
+  }, []);
+
   const [cupboards, setCupboards] = useState<any[]>([
     { 
       id: 'cup_1', name: 'Main Wardrobe', location_type: 'UP', color: '#00ffff',
@@ -349,7 +361,22 @@ export default function Dashboard() {
                     .then(() => {
                       (document.getElementById('compName') as HTMLInputElement).value = '';
                       (document.getElementById('compCat') as HTMLInputElement).value = '';
-                      setComponents(prev => [...prev, { id: 'comp_' + Math.random(), name: payload.name, category: payload.category, quantity: payload.quantity, locations: [{ cupboard_name: 'Mocked', shelf_name: 'Mocked', position_percent: 50 }] }]);
+                      
+                        const locationSelect = document.getElementById('compLocation') as HTMLSelectElement;
+                        const selectedOption = locationSelect.options[locationSelect.selectedIndex];
+                        const locText = selectedOption ? selectedOption.text : 'No Location';
+                        let cup = 'Unassigned';
+                        let sh = 'Unassigned';
+                        if (selectedOption && selectedOption.parentElement && selectedOption.parentElement.tagName === 'OPTGROUP') {
+                           const group = (selectedOption.parentElement as HTMLOptGroupElement).label;
+                           [cup, sh] = group.split(' / ');
+                        }
+                        setComponents(prev => {
+                           const updated = [...prev, { id: 'comp_' + Math.random(), name: payload.name, category: payload.category, quantity: payload.quantity, locations: [{ cupboard_name: cup, shelf_name: sh, position_percent: 50 }] }];
+                           localStorage.setItem('mock_components', JSON.stringify(updated));
+                           return updated;
+                        });
+
                     });
                 }} className="bg-cyan-950/50 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black px-6 py-2 tracking-widest text-xs transition-all">
                   REGISTER
