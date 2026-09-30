@@ -27,8 +27,10 @@ export default function Dashboard() {
   
   
   const [components, setComponents] = useState<any[]>([
-    { id: 'comp_1', name: 'Arduino Nano', category: 'Microcontrollers', quantity: 5, notes: 'Clone', location: { cupboard: 'Main Wardrobe', shelf: 'Top Shelf' } },
-    { id: 'comp_2', name: '10k Resistors', category: 'Passives', quantity: 100, notes: 'Through hole', location: { cupboard: 'Electronics', tray: 'Resistors' } }
+    { id: 'comp_1', name: 'Arduino Nano', category: 'Microcontrollers', quantity: 5, notes: 'Clone', locations: [{ cupboard_name: 'Main Wardrobe', shelf_name: 'Top Shelf' }] },
+    { id: 'comp_2', name: '10k Resistors', category: 'Passives', quantity: 100, notes: 'Through hole', locations: [{ cupboard_name: 'Electronics', tray_id: 'tr_1', position_percent: 20 }] },
+    { id: '1', name: 'Ceramic Capacitor 104', category: 'Passives', quantity: 50, notes: 'SMD', locations: [{ cupboard_name: 'Electronics', tray_id: 'tr_2', position_percent: 60 }] },
+    { id: '2', name: 'Electrolytic Capacitor 10uF', category: 'Passives', quantity: 20, notes: 'THT', locations: [{ cupboard_name: 'Electronics', tray_id: 'tr_2', position_percent: 60 }] }
   ]);
   const [cupboards, setCupboards] = useState<any[]>([
     { 
