@@ -6,6 +6,26 @@ import { OrbitControls, Box, Line } from '@react-three/drei';
 import { Search, MapPin, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 
+
+const originalFetch = typeof window !== 'undefined' ? window.fetch : null;
+const fetch = async (...args: any[]) => {
+  console.log('Mock fetch intercepted:', args);
+  
+  // If it's a component search query
+  if (typeof args[0] === 'string' && args[0].includes('/api/components?q=')) {
+      const q = args[0].split('?q=')[1].toLowerCase();
+      // Dummy data matching "capac" or "resis" or anything
+      return { 
+         json: async () => [
+            { id: '1', name: 'Ceramic Capacitor 104', quantity: 50, category: 'Passives' },
+            { id: '2', name: 'Electrolytic Capacitor 10uF', quantity: 20, category: 'Passives' }
+         ].filter(c => c.name.toLowerCase().includes(q) || c.category.toLowerCase().includes(q))
+      } as any;
+  }
+  
+  return { json: async () => ({}) } as any;
+};
+
 export default function Home() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
