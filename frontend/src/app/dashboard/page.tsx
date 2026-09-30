@@ -31,7 +31,7 @@ export default function Dashboard() {
   const triggerLightingUpdate = useCallback((r: number, g: number, b: number) => {
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
     debounceTimer.current = setTimeout(() => {
-      fetch('/api/lighting/manual', {
+      console.log('Mock fetch: /api/lighting/manual', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ start: startLed, end: endLed, r, g, b })
@@ -44,7 +44,7 @@ export default function Dashboard() {
   const triggerPreview = useCallback((shelf_id: string, position_percent: number) => {
     if (previewTimer.current) clearTimeout(previewTimer.current);
     previewTimer.current = setTimeout(() => {
-      fetch('/api/lighting/preview_location', {
+      console.log('Mock fetch: /api/lighting/preview_location', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ shelf_id, position_percent })
@@ -56,14 +56,14 @@ export default function Dashboard() {
   const [voiceLog, setVoiceLog] = useState<string>("SYSTEM_READY");
 
   const fetchRoom = useCallback(() => {
-    fetch('/api/room')
+    console.log('Mock fetch: /api/room')
       .then(res => res.json())
       .then(data => setCupboards(data.cupboards || []));
   }, []);
 
   useEffect(() => {
     fetchRoom();
-    fetch('/api/components')
+    console.log('Mock fetch: /api/components')
       .then(res => res.json())
       .then(data => setComponents(data.components || data));
   }, [fetchRoom]);
@@ -77,7 +77,7 @@ export default function Dashboard() {
         scanner.clear();
         setVoiceLog("QR_DETECTED: " + decodedText);
         // Call backend to locate
-        fetch('/api/locate', {
+        console.log('Mock fetch: /api/locate', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({ component_id: decodedText, tray_id: decodedText }) // Send both, backend figures it out
@@ -132,7 +132,7 @@ export default function Dashboard() {
                 msg.voice = speechSynthesis.getVoices().find(v => v.name.includes("Zira")) || null;
                 speechSynthesis.speak(msg);
 
-                await fetch('/api/locate', {
+                await console.log('Mock fetch: /api/locate', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ component_id: comp.id })
@@ -232,7 +232,7 @@ export default function Dashboard() {
           {['INVENTORY', 'SCANNER', 'LIGHTING', 'ROOM'].map(tab => (
             <button
               key={tab}
-              onClick={() => { setActiveTab(tab); if(tab === 'LIGHTING') fetch('/api/lighting/flash_jolly', { method: 'POST' }); }}
+              onClick={() => { setActiveTab(tab); if(tab === 'LIGHTING') console.log('Mock fetch: /api/lighting/flash_jolly', { method: 'POST' }); }}
               className={`w-full flex items-center gap-4 px-4 py-3 mb-2 text-sm tracking-[0.15em] transition-all ${
                 activeTab === tab 
                   ? 'bg-cyan-950/40 text-cyan-300 border-l-2 border-cyan-400' 
@@ -312,12 +312,12 @@ export default function Dashboard() {
                     payload.tray_id = loc.replace('tray_', '');
                   }
                   
-                  fetch('/api/lighting/flash_confirm', { method: 'POST' });
-                  fetch('/api/components', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+                  console.log('Mock fetch: /api/lighting/flash_confirm', { method: 'POST' });
+                  console.log('Mock fetch: /api/components', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
                     .then(() => {
                       (document.getElementById('compName') as HTMLInputElement).value = '';
                       (document.getElementById('compCat') as HTMLInputElement).value = '';
-                      fetch('/api/components').then(res => res.json()).then(data => setComponents(data.components || data));
+                      console.log('Mock fetch: /api/components').then(res => res.json()).then(data => setComponents(data.components || data));
                     });
                 }} className="bg-cyan-950/50 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black px-6 py-2 tracking-widest text-xs transition-all">
                   REGISTER
@@ -353,7 +353,7 @@ export default function Dashboard() {
                           <QrCode className="w-4 h-4" />
                         </button>
                         <button onClick={() => {
-                          fetch(`/api/components/${comp.id}`, { method: 'DELETE' }).then(() => fetch('/api/components').then(res => res.json()).then(data => setComponents(data.components || data)));
+                          fetch(`/api/components/${comp.id}`, { method: 'DELETE' }).then(() => console.log('Mock fetch: /api/components').then(res => res.json()).then(data => setComponents(data.components || data)));
                         }} className="p-2 text-red-900 hover:text-red-500 hover:bg-red-900/20 rounded transition-colors" title="Delete">
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -476,13 +476,13 @@ export default function Dashboard() {
 
                <div className="mt-12 flex gap-4 border-t border-cyan-900/30 pt-8">
                  <button 
-                   onClick={() => fetch('/api/lighting/manual', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ start: startLed, end: endLed, r: ledColor.r, g: ledColor.g, b: ledColor.b })})}
+                   onClick={() => console.log('Mock fetch: /api/lighting/manual', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ start: startLed, end: endLed, r: ledColor.r, g: ledColor.g, b: ledColor.b })})}
                    className="bg-cyan-950/50 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black px-8 py-4 tracking-[0.2em] text-sm transition-all"
                  >
                    TRANSMIT_OVERRIDE
                  </button>
                  <button 
-                   onClick={() => fetch('/api/lighting/mode', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'OFF' })})}
+                   onClick={() => console.log('Mock fetch: /api/lighting/mode', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'OFF' })})}
                    className="bg-transparent border border-red-900/50 text-red-500 hover:bg-red-900/30 px-8 py-4 tracking-[0.2em] text-sm transition-all"
                  >
                    SYSTEM_OFF
@@ -493,19 +493,19 @@ export default function Dashboard() {
                  <p className="text-cyan-600 tracking-widest mb-6 text-sm">HARDWARE_ANIMATIONS</p>
                  <div className="flex gap-4">
                    <button 
-                     onClick={() => fetch('/api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 1 })})}
+                     onClick={() => console.log('Mock fetch: /api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 1 })})}
                      className="bg-purple-950/50 border border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-black px-6 py-3 tracking-widest text-xs transition-all"
                    >
                      RAINBOW_SCROLL
                    </button>
                    <button 
-                     onClick={() => fetch('/api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 2 })})}
+                     onClick={() => console.log('Mock fetch: /api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 2 })})}
                      className="bg-green-950/50 border border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-3 tracking-widest text-xs transition-all"
                    >
                      MUSIC_SYNC
                    </button>
                    <button 
-                     onClick={() => fetch('/api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 0 })})}
+                     onClick={() => console.log('Mock fetch: /api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 0 })})}
                      className="bg-slate-900 border border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white px-6 py-3 tracking-widest text-xs transition-all"
                    >
                      STOP_ANIMATION
@@ -529,8 +529,8 @@ export default function Dashboard() {
                      const name = (document.getElementById('cupName') as HTMLInputElement).value;
                      const type = (document.getElementById('cupType') as HTMLSelectElement).value;
                      const color = (document.getElementById('cupColor') as HTMLInputElement).value;
-                     fetch('/api/room/cupboards', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, type, color }) })
-                       .then(() => fetch('/api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)));
+                     console.log('Mock fetch: /api/room/cupboards', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, type, color }) })
+                       .then(() => console.log('Mock fetch: /api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)));
                    }} className="bg-cyan-950/50 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black px-6 py-2 tracking-[0.2em] text-xs transition-all">CREATE</button>
                 </div>
                 
@@ -548,7 +548,7 @@ export default function Dashboard() {
                       <button onClick={() => {
                         if(confirm("Delete this cupboard and all its shelves?")) {
                           fetch(`/api/room/cupboards/${cupboard.id}`, { method: 'DELETE' })
-                            .then(() => fetch('/api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)));
+                            .then(() => console.log('Mock fetch: /api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)));
                         }
                       }} className="text-cyan-900 hover:text-red-500 transition-colors ml-4">
                         <Trash2 className="w-4 h-4" />
@@ -573,7 +573,7 @@ export default function Dashboard() {
                               <button onClick={() => {
                                 if(confirm("Delete this shelf?")) {
                                   fetch(`/api/room/shelves/${shelf.id}`, { method: 'DELETE' })
-                                    .then(() => fetch('/api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)));
+                                    .then(() => console.log('Mock fetch: /api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)));
                                 }
                               }} className="p-2 text-cyan-900 hover:text-red-500 hover:bg-red-900/20 rounded transition-colors">
                                 <Trash2 className="w-4 h-4" />
@@ -590,7 +590,7 @@ export default function Dashboard() {
                                   <button onClick={() => setQrModal({isOpen: true, value: tray.id, title: tray.name})} className="text-cyan-600 hover:text-cyan-400" title="Print QR Code">
                                     <QrCode className="w-4 h-4" />
                                   </button>
-                                  <button onClick={() => fetch(`/api/room/trays/${tray.id}`, { method: 'DELETE' }).then(() => fetch('/api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)))} className="text-red-900 hover:text-red-500">
+                                  <button onClick={() => fetch(`/api/room/trays/${tray.id}`, { method: 'DELETE' }).then(() => console.log('Mock fetch: /api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)))} className="text-red-900 hover:text-red-500">
                                     <Trash2 className="w-4 h-4" />
                                   </button>
                                 </div>
@@ -604,9 +604,9 @@ export default function Dashboard() {
                                 const name = (document.getElementById(`trayName_${shelf.id}`) as HTMLInputElement).value;
                                 const pos = parseInt((document.getElementById(`trayPos_${shelf.id}`) as HTMLInputElement).value) || 50;
                                 if (!name) return;
-                                fetch('/api/lighting/flash_confirm', { method: 'POST' });
-                                fetch('/api/room/trays', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ shelf_id: shelf.id, name, position_percent: pos }) })
-                                  .then(() => fetch('/api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)));
+                                console.log('Mock fetch: /api/lighting/flash_confirm', { method: 'POST' });
+                                console.log('Mock fetch: /api/room/trays', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ shelf_id: shelf.id, name, position_percent: pos }) })
+                                  .then(() => console.log('Mock fetch: /api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)));
                               }} className="bg-cyan-950/30 border border-cyan-900 text-cyan-500 hover:bg-cyan-900 hover:text-cyan-100 px-3 py-1 text-xs transition-all">ADD TRAY</button>
                             </div>
                           </div>
@@ -630,8 +630,8 @@ export default function Dashboard() {
                            const led_end = parseInt((document.getElementById(`shEnd_${cupboard.id}`) as HTMLInputElement).value);
                            const direction = (document.getElementById(`shDir_${cupboard.id}`) as HTMLSelectElement).value;
                            
-                           fetch('/api/room/shelves', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cupboard_id: cupboard.id, name, strip_id, led_start, led_end, direction }) })
-                             .then(() => fetch('/api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)));
+                           console.log('Mock fetch: /api/room/shelves', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cupboard_id: cupboard.id, name, strip_id, led_start, led_end, direction }) })
+                             .then(() => console.log('Mock fetch: /api/room').then(res => res.json()).then(data => setCupboards(data.cupboards)));
                          }} className="bg-transparent border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black px-4 py-2 tracking-[0.2em] text-xs transition-all">+ SHELF</button>
                       </div>
                     </div>
