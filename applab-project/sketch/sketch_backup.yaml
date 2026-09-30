@@ -1,0 +1,7 @@
+profiles:
+  default:
+    target: arduino:renesas_uno:uno_q
+    
+dependencies:
+  - name: Adafruit NeoPixel
+    version: ^1.12.0

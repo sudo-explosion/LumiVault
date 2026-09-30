@@ -1,0 +1,11 @@
+*.zip
+patch_*.py
+make_zip*.py
+script.py
+test_v8_check/
+node_modules/
+.next/
+out/
+__pycache__/
+applab-project/python/static/
+database.sqlite
