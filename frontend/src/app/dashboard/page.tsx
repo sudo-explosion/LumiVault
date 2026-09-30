@@ -6,6 +6,13 @@ import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 
+const originalFetch = typeof window !== 'undefined' ? window.fetch : null;
+const fetch = async (...args: any[]) => {
+  console.log('Mock fetch intercepted:', args);
+  return { json: async () => ({}) } as any;
+};
+
+
 function rgbToHex(r: number, g: number, b: number) {
   return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
 }
@@ -17,8 +24,30 @@ function hexToRgb(hex: string) {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('INVENTORY');
-  const [components, setComponents] = useState<any[]>([]);
-  const [cupboards, setCupboards] = useState<any[]>([]);
+  
+  
+  const [components, setComponents] = useState<any[]>([
+    { id: 'comp_1', name: 'Arduino Nano', category: 'Microcontrollers', quantity: 5, notes: 'Clone', location: { cupboard: 'Main Wardrobe', shelf: 'Top Shelf' } },
+    { id: 'comp_2', name: '10k Resistors', category: 'Passives', quantity: 100, notes: 'Through hole', location: { cupboard: 'Electronics', tray: 'Resistors' } }
+  ]);
+  const [cupboards, setCupboards] = useState<any[]>([
+    { 
+      id: 'cup_1', name: 'Main Wardrobe', location_type: 'UP', color: '#00ffff',
+      shelves: [
+        { id: 'sh_1', name: 'Top Shelf', index_start: 0, index_end: 40, trays: [] }
+      ]
+    },
+    {
+      id: 'cup_2', name: 'Electronics', location_type: 'DOWN', color: '#ff00ff',
+      shelves: [
+        { id: 'sh_2', name: 'Parts Bin', index_start: 41, index_end: 100, trays: [
+          { id: 'tr_1', name: 'Resistors', position_percent: 20 },
+          { id: 'tr_2', name: 'Capacitors', position_percent: 60 }
+        ] }
+      ]
+    }
+  ]);
+
   const [qrModal, setQrModal] = useState<{isOpen: boolean, value: string, title: string}>({isOpen: false, value: '', title: ''});
   
   // Lighting Control State
@@ -58,14 +87,14 @@ export default function Dashboard() {
   const fetchRoom = useCallback(() => {
     fetch('/api/room')
       .then(res => res.json())
-      .then(data => setCupboards(data.cupboards || []));
+      .then(data => /* setCupboards(data.cupboards || []) */);
   }, []);
 
   useEffect(() => {
     fetchRoom();
     fetch('/api/components')
       .then(res => res.json())
-      .then(data => setComponents(data.components || data));
+      .then(data => /* setComponents(data.components || data) */);
   }, [fetchRoom]);
 
   // QR Scanner Lifecycle
@@ -317,7 +346,7 @@ export default function Dashboard() {
                     .then(() => {
                       (document.getElementById('compName') as HTMLInputElement).value = '';
                       (document.getElementById('compCat') as HTMLInputElement).value = '';
-                      fetch('/api/components').then(res => res.json()).then(data => setComponents(data.components || data));
+                      fetch('/api/components').then(res => res.json()).then(data => /* setComponents(data.components || data) */);
                     });
                 }} className="bg-cyan-950/50 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black px-6 py-2 tracking-widest text-xs transition-all">
                   REGISTER
@@ -353,7 +382,7 @@ export default function Dashboard() {
                           <QrCode className="w-4 h-4" />
                         </button>
                         <button onClick={() => {
-                          fetch(`/api/components/${comp.id}`, { method: 'DELETE' }).then(() => fetch('/api/components').then(res => res.json()).then(data => setComponents(data.components || data)));
+                          fetch(`/api/components/${comp.id}`, { method: 'DELETE' }).then(() => fetch('/api/components').then(res => res.json()).then(data => /* setComponents(data.components || data) */));
                         }} className="p-2 text-red-900 hover:text-red-500 hover:bg-red-900/20 rounded transition-colors" title="Delete">
                           <Trash2 className="w-4 h-4" />
                         </button>
