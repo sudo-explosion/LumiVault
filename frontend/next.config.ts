@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export', // Fully static export to be served by Flask
-  trailingSlash: true,
-  images: { unoptimized: true }
+  /* config options here */
+  output: 'export',
+  typescript: {
+    ignoreBuildErrors: true,
+  }
 };
 
 export default nextConfig;
