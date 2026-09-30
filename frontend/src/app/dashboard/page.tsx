@@ -87,14 +87,14 @@ export default function Dashboard() {
   const fetchRoom = useCallback(() => {
     fetch('/api/room')
       .then(res => res.json())
-      .then(data => /* setCupboards(data.cupboards || []) */);
+      .then(data => {});
   }, []);
 
   useEffect(() => {
     fetchRoom();
     fetch('/api/components')
       .then(res => res.json())
-      .then(data => /* setComponents(data.components || data) */);
+      .then(data => {});
   }, [fetchRoom]);
 
   // QR Scanner Lifecycle
@@ -346,7 +346,7 @@ export default function Dashboard() {
                     .then(() => {
                       (document.getElementById('compName') as HTMLInputElement).value = '';
                       (document.getElementById('compCat') as HTMLInputElement).value = '';
-                      fetch('/api/components').then(res => res.json()).then(data => /* setComponents(data.components || data) */);
+                      fetch('/api/components').then(res => res.json()).then(data => {});
                     });
                 }} className="bg-cyan-950/50 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black px-6 py-2 tracking-widest text-xs transition-all">
                   REGISTER
@@ -382,7 +382,7 @@ export default function Dashboard() {
                           <QrCode className="w-4 h-4" />
                         </button>
                         <button onClick={() => {
-                          fetch(`/api/components/${comp.id}`, { method: 'DELETE' }).then(() => fetch('/api/components').then(res => res.json()).then(data => /* setComponents(data.components || data) */));
+                          fetch(`/api/components/${comp.id}`, { method: 'DELETE' }).then(() => fetch('/api/components').then(res => res.json()).then(data => {}));
                         }} className="p-2 text-red-900 hover:text-red-500 hover:bg-red-900/20 rounded transition-colors" title="Delete">
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -673,3 +673,4 @@ export default function Dashboard() {
     </div>
   );
 }
+
