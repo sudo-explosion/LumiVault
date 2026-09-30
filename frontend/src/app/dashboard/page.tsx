@@ -52,6 +52,7 @@ export default function Dashboard() {
   
   // Lighting Control State
   const [startLed, setStartLed] = useState(0);
+  const [currentEffect, setCurrentEffect] = useState(0);
   const [endLed, setEndLed] = useState(74);
   const [ledColor, setLedColor] = useState({ r: 0, g: 255, b: 255 });
   const [livePreview, setLivePreview] = useState(false);
@@ -346,7 +347,7 @@ export default function Dashboard() {
                     .then(() => {
                       (document.getElementById('compName') as HTMLInputElement).value = '';
                       (document.getElementById('compCat') as HTMLInputElement).value = '';
-                      fetch('/api/components').then(res => res.json()).then(data => {});
+                      setComponents(prev => [...prev, { id: 'comp_' + Math.random(), name: payload.name, category: payload.category, quantity: payload.quantity, locations: [{ cupboard_name: 'Mocked', shelf_name: 'Mocked', position_percent: 50 }] }]);
                     });
                 }} className="bg-cyan-950/50 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black px-6 py-2 tracking-widest text-xs transition-all">
                   REGISTER
@@ -423,12 +424,12 @@ export default function Dashboard() {
                     <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(90deg, #06b6d4 1px, transparent 1px)', backgroundSize: '4px 100%' }}></div>
                     
                     <div 
-                      className="absolute h-full transition-all duration-200 border-x-2 border-white/50"
+                      className={`absolute h-full transition-all duration-200 border-x-2 border-white/50 ${currentEffect === 1 ? 'animate-[rainbow_2s_linear_infinite]' : ''} ${currentEffect === 2 ? 'animate-pulse' : ''}`.trim()}
                       style={{ 
                         left: `${(startLed / 176) * 100}%`, 
                         width: `${((endLed - startLed) / 176) * 100}%`,
-                        backgroundColor: `rgba(${ledColor.r}, ${ledColor.g}, ${ledColor.b}, 0.8)`,
-                        boxShadow: `0 0 20px rgba(${ledColor.r}, ${ledColor.g}, ${ledColor.b}, 0.5)`
+                        backgroundColor: currentEffect === 1 ? 'transparent' : currentEffect === 2 ? '#ff0000' : `rgba(${ledColor.r}, ${ledColor.g}, ${ledColor.b}, 0.8)`, backgroundImage: currentEffect === 1 ? 'linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet, red)' : 'none', backgroundSize: currentEffect === 1 ? '200% 100%' : 'auto',
+                        boxShadow: currentEffect === 0 ? `0 0 20px rgba(${ledColor.r}, ${ledColor.g}, ${ledColor.b}, 0.5)` : currentEffect === 2 ? `0 0 20px rgba(255, 0, 0, 0.8)` : 'none'
                       }}
                     />
                  </div>
@@ -522,19 +523,19 @@ export default function Dashboard() {
                  <p className="text-cyan-600 tracking-widest mb-6 text-sm">HARDWARE_ANIMATIONS</p>
                  <div className="flex gap-4">
                    <button 
-                     onClick={() => fetch('/api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 1 })})}
+                     onClick={() => { setCurrentEffect(1); fetch('/api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 1 })})}}
                      className="bg-purple-950/50 border border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-black px-6 py-3 tracking-widest text-xs transition-all"
                    >
                      RAINBOW_SCROLL
                    </button>
                    <button 
-                     onClick={() => fetch('/api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 2 })})}
+                     onClick={() => { setCurrentEffect(2); fetch('/api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 2 })})}}
                      className="bg-green-950/50 border border-green-500 text-green-400 hover:bg-green-500 hover:text-black px-6 py-3 tracking-widest text-xs transition-all"
                    >
                      MUSIC_SYNC
                    </button>
                    <button 
-                     onClick={() => fetch('/api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 0 })})}
+                     onClick={() => { setCurrentEffect(0); fetch('/api/lighting/effect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ effect: 0 })})}}
                      className="bg-slate-900 border border-slate-700 text-slate-400 hover:bg-slate-700 hover:text-white px-6 py-3 tracking-widest text-xs transition-all"
                    >
                      STOP_ANIMATION
