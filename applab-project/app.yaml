@@ -1,8 +1,9 @@
 name: Experimanager
 version: 1.0.0
 description: Smart storage lighting component locator for UNO Q.
-author: Systemic_pilot
+author: Sudo-Explosion
 entrypoint: python/main.py
 ports:
   - 8080
+
 
